@@ -1,11 +1,12 @@
 import { Application, RequestHandler, ErrorRequestHandler } from 'express';
 declare const middlewareAttach: MiddlewareAttach;
 export default middlewareAttach;
+export interface MiddlewareDefinition {
+    middlewares: Middleware[];
+    path?: string;
+}
+declare type Middleware = RequestHandler | ErrorRequestHandler;
 interface MiddlewareAttach {
     (app: Application, middlewareDefs: MiddlewareDefinition[]): void;
-}
-export interface MiddlewareDefinition {
-    middlewares: (RequestHandler | ErrorRequestHandler)[];
-    path?: string;
 }
 //# sourceMappingURL=index.d.ts.map

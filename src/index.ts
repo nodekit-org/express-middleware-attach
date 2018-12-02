@@ -8,13 +8,14 @@ import {
 } from 'express';
 import chalk from 'chalk';
 
-const tag = chalk.cyan('[express-middleware-attach]');
+const logTag = chalk.cyan('[express-middleware-attach]');
+const UNNAMED_MIDDLEWARE = 'unnamed-middleware';
 
 const middlewareAttach: MiddlewareAttach = function (app, middlewareDefs) {
   middlewareDefs.map(({ middlewares, path }) => {
     console.info(
-      `${tag} middleware is attached at path: ${chalk.yellow('%s')}, middlewares: %s`, 
-      path || 'VOID',
+      `${logTag} middleware is attached at path: ${chalk.yellow('%s')}, middlewares: %s`, 
+      path || '* (empty)',
       getMiddlewareNames(middlewares),
     );
     if (path) {
@@ -27,6 +28,13 @@ const middlewareAttach: MiddlewareAttach = function (app, middlewareDefs) {
 
 export default middlewareAttach;
 
+export interface MiddlewareDefinition {
+  middlewares: Middleware[];
+  path?: string;
+}
+
+type Middleware = RequestHandler | ErrorRequestHandler;
+
 interface MiddlewareAttach {
   (
     app: Application, 
@@ -34,15 +42,27 @@ interface MiddlewareAttach {
   ): void;
 }
 
-export interface MiddlewareDefinition {
-  middlewares: (RequestHandler | ErrorRequestHandler)[];
-  path?: string;
-}
-
-function getMiddlewareNames(middlewares: Function[] | Function): string {
+function getMiddlewareNames(middlewares: Middleware | Middleware[]): string {
   if (Array.isArray(middlewares)) {
-    return `[ ${middlewares.map((m) => m.name).join(', ')} ]`; 
+    const names = middlewares.map((middleware) => {
+      if (!middleware.name || !middleware.name.length) {
+        warnIfNameIsNotDefined();
+        return UNNAMED_MIDDLEWARE;
+      } else {
+        return middleware.name;
+      }
+    });
+
+    return `[ ${names.join(', ')} ]`; 
   } else {
+    if (!middlewares.name || !middlewares.name.length) {
+      warnIfNameIsNotDefined();
+      return UNNAMED_MIDDLEWARE;
+    }
     return middlewares.name;
   }
+}
+
+function warnIfNameIsNotDefined() {
+  console.warn(`${logTag} unnamed middleware is defined. Make sure to give name for better debugging`);
 }

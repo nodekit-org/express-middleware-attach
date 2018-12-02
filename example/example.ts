@@ -18,9 +18,10 @@ const middleware2 = (req: Request, res, next) => {
 const middlewareDefs: MiddlewareDefinition[] = [
   {
     middlewares: [ middleware1 ],
+    path: '/power',
   },
   {
-    middlewares: [ middleware2 ],
+    middlewares: [ middleware2, () => {} ],
   },
 ];
 

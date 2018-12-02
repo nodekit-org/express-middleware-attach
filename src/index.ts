@@ -14,7 +14,7 @@ const UNNAMED_MIDDLEWARE = 'unnamed-middleware';
 const middlewareAttach: MiddlewareAttach = function (app, middlewareDefs) {
   middlewareDefs.map(({ middlewares, path }) => {
     console.info(
-      `${logTag} middleware is attached at path: ${chalk.yellow('%s')}, middlewares: %s`, 
+      `${logTag} middleware is attached at path: ${chalk.green('%s')}, middlewares: %s`, 
       path || '* (empty)',
       getMiddlewareNames(middlewares),
     );
@@ -64,5 +64,5 @@ function getMiddlewareNames(middlewares: Middleware | Middleware[]): string {
 }
 
 function warnIfNameIsNotDefined() {
-  console.warn(`${logTag} unnamed middleware is defined. Make sure to give name for better debugging`);
+  console.warn(`${logTag} ${chalk.yellow('unnamed')} middleware is defined. Make sure to give name for better debugging`);
 }

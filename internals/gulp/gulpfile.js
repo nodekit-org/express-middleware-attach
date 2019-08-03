@@ -4,6 +4,7 @@
 })();
 
 const babel = require('gulp-babel');
+const { buildLogger } = require('jege/server');
 const chalk = require('chalk');
 const del = require('del');
 const fs = require('fs');
@@ -16,13 +17,15 @@ const util = require('util');
 const babelRc = require('./.babelrc');
 const tsConfig = require('./tsconfig');
 
+const log = buildLogger('[express-middleware-attach]');
+
 const ROOT_PATH = (function(currentWorkingDirectory) {
   const rootPath = fs.realpathSync(currentWorkingDirectory);
   const pJson = fs.existsSync(`${rootPath}/package.json`);
   if (!pJson) {
-    console.error(
-`Current working directory might not be the project root directory.
-Did you call process.chdir() properly?`);
+    log(
+      `Current working directory might not be the project root directory.
+      Did you call process.chdir() properly?`);
     process.exit(0);
   }
   return rootPath;
@@ -33,10 +36,6 @@ const paths = {
   src: path.resolve(ROOT_PATH, 'src'),
 };
 
-const buildLog = (tag, ...args) => {
-  console.info(chalk.cyan(`[build - ${tag}]`), util.format(...args));
-};
-
 const Task = {
   BABEL: 'babel',
   BUILD: 'build',
@@ -45,7 +44,7 @@ const Task = {
 };
 
 gulp.task(Task.CLEAN, () => {
-  buildLog(Task.CLEAN, 'LIB_PATH: %s', paths.lib);
+  log(Task.CLEAN, 'LIB_PATH: %s', paths.lib);
 
   return del([
     `${paths.lib}/**/*`,
@@ -53,7 +52,7 @@ gulp.task(Task.CLEAN, () => {
 });
 
 gulp.task(Task.TSC, gulp.series(Task.CLEAN, function _tsc(done) {
-  buildLog('tsc config: %o', tsConfig.compilerOptions);
+  log('tsc config: %o', tsConfig.compilerOptions);
   const tsProject = ts.createProject(tsConfig.compilerOptions);
 
   return gulp.src([`${paths.src}/**/*.{ts,tsx}`])

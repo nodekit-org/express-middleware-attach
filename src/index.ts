@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import {
   Application,
   RequestHandler,
@@ -6,15 +7,14 @@ import {
   Response,
   NextFunction,
 } from 'express';
-import chalk from 'chalk';
+import { logger } from 'jege/server';
 
-const logTag = chalk.cyan('[express-middleware-attach]');
+const log = logger('[express-middleware-attach]')
 const UNNAMED_MIDDLEWARE = 'unnamed-middleware';
 
 const middlewareAttach: MiddlewareAttach = function (app, middlewareDefs) {
   middlewareDefs.map(({ middlewares, path }) => {
-    console.info(
-      `${logTag} middleware is attached at path: ${chalk.green('%s')}, middlewares: %s`, 
+    log(`middleware is attached at path: ${chalk.green('%s')}, middlewares: %s`,
       path || '* (empty)',
       getMiddlewareNames(middlewares),
     );
@@ -64,5 +64,5 @@ function getMiddlewareNames(middlewares: Middleware | Middleware[]): string {
 }
 
 function warnIfNameIsNotDefined() {
-  console.warn(`${logTag} ${chalk.yellow('unnamed')} middleware is defined. Make sure to give name for better debugging`);
+  log(`${chalk.yellow('unnamed')} middleware is defined. Make sure to give name for better debugging`);
 }
